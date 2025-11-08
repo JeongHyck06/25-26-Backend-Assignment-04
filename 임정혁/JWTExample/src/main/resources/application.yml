@@ -1,19 +1,15 @@
 spring:
-    datasource:
-        url: ${DB_URL:jdbc:mysql://localhost:3306/jwt_todo_db}
-        username: ${DB_USER_NAME:root}
-        password: ${DB_PASSWORD:}
-        driver-class-name: com.mysql.cj.jdbc.Driver
+  profiles:
+    include: secret
 
-    jpa:
-        hibernate:
-            ddl-auto: create
-        properties:
-            hibernate:
-                show_sql: true
-                format_sql: false
-        open-in-view: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-jwt:
-    secret: ${JWT_SECRET:my-secret-key-for-jwt-token-generation-and-validation-must-be-at-least-256-bits}
-    access-token-validity-in-milliseconds: ${ACCESS_TOKEN_VALIDITY_IN_MILLISECONDS:3600000}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    open-in-view: false

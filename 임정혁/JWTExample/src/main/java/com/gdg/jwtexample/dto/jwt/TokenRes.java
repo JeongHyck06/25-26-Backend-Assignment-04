@@ -12,11 +12,13 @@ import lombok.NoArgsConstructor;
 public class TokenRes {
 
     private String accessToken;
+    private String refreshToken;
     private String tokenType;
 
-    public static TokenRes of(String accessToken) {
+    public static TokenRes of(String accessToken, String refreshToken) {
         return TokenRes.builder()
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .build();
     }

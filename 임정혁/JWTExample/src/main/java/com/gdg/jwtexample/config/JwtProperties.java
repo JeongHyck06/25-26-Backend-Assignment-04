@@ -13,5 +13,6 @@ public class JwtProperties {
 
     private String secret;
     private Long accessTokenValidityInMilliseconds;
+    private Long refreshTokenValidityInMilliseconds;
 }
 

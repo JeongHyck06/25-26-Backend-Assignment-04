@@ -15,9 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -98,6 +96,14 @@ public class JwtTokenProvider {
 
     public String getUsernameFromToken(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    public String createRefreshToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    public Long getRefreshTokenValidityInMilliseconds() {
+        return jwtProperties.getRefreshTokenValidityInMilliseconds();
     }
 }
 

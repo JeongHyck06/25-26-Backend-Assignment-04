@@ -13,7 +13,6 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 public class User {
@@ -41,7 +40,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Todo> todos = new ArrayList<>();
+    private final List<Todo> todos = new ArrayList<>();
 
     public void updateUserName(String username) {
         this.username = username;

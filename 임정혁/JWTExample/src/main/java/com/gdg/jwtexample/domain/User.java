@@ -44,6 +44,7 @@ public class User {
     private final List<Todo> todos = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @PrimaryKeyJoinColumn
     private RefreshToken refreshToken;
 
     public void updateUserName(String username) {

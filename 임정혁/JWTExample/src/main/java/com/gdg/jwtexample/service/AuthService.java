@@ -91,18 +91,16 @@ public class AuthService {
     public void logout(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        refreshTokenRepository.deleteByUser(user);
+        refreshTokenRepository.deleteById(user.getId());
     }
 
     private String createAndSaveRefreshToken(User user) {
-        refreshTokenRepository.findByUser(user)
-                .ifPresent(refreshTokenRepository::delete);
-
         String refreshToken = jwtTokenProvider.createRefreshToken();
         LocalDateTime expiryDate = LocalDateTime.now()
                 .plusSeconds(jwtTokenProvider.getRefreshTokenValidityInMilliseconds() / 1000);
 
         RefreshToken token = RefreshToken.builder()
+                .userId(user.getId())
                 .token(refreshToken)
                 .user(user)
                 .expiryDate(expiryDate)

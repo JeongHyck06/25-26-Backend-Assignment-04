@@ -26,7 +26,7 @@ public class TodoService {
     private final TodoRepository todoRepository;
     private final UserRepository userRepository;
 
-    @Transactional
+    @Transactional(readOnly = false)
     public TodoInfoRes createTodo(String email, TodoCreateReq request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -87,7 +87,7 @@ public class TodoService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public TodoInfoRes updateTodo(String email, Long todoId, TodoUpdateReq request) {
         Todo todo = getTodoByIdAndValidateOwner(todoId, email);
 
@@ -105,7 +105,7 @@ public class TodoService {
         return TodoInfoRes.from(todo);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void deleteTodo(String email, Long todoId) {
         Todo todo = getTodoByIdAndValidateOwner(todoId, email);
         todoRepository.delete(todo);

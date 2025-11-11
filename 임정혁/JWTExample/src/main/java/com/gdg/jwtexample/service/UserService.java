@@ -33,7 +33,7 @@ public class UserService {
         return UserInfoRes.from(user);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public UserInfoRes updateUser(String email, UserUpdateReq request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -45,7 +45,7 @@ public class UserService {
         return UserInfoRes.from(user);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void deleteUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));

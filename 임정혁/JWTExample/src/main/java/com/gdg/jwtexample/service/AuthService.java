@@ -28,7 +28,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Transactional
+    @Transactional(readOnly = false)
     public Long signUp(UserSignUpReq request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
@@ -52,7 +52,7 @@ public class AuthService {
         return userRepository.save(user).getId();
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public TokenRes login(UserLoginReq request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
@@ -67,7 +67,7 @@ public class AuthService {
         return TokenRes.of(accessToken, refreshToken);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public TokenRes refresh(String refreshToken) {
         RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_TOKEN));
@@ -88,7 +88,7 @@ public class AuthService {
         return TokenRes.of(newAccessToken, newRefreshToken);
     }
 
-    @Transactional
+    @Transactional(readOnly = false)
     public void logout(String userEmail) {
         refreshTokenRepository.deleteByUserEmail(userEmail);
     }

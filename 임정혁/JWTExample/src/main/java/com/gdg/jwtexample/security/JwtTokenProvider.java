@@ -33,12 +33,12 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(String username, String authorities) {
+    public String createToken(String email, String authorities) {
         long now = System.currentTimeMillis();
         Date validity = new Date(now + jwtProperties.getAccessTokenValidityInMilliseconds());
 
         return Jwts.builder()
-                .subject(username)
+                .subject(email)
                 .claim(AUTHORITIES_KEY, authorities)
                 .issuedAt(new Date(now))
                 .expiration(validity)
@@ -94,7 +94,7 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getEmailFromToken(String token) {
         return parseClaims(token).getSubject();
     }
 

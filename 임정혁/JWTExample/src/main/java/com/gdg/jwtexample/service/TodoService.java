@@ -91,28 +91,15 @@ public class TodoService {
     public TodoInfoRes updateTodo(String email, Long todoId, TodoUpdateReq request) {
         Todo todo = getTodoByIdAndValidateOwner(todoId, email);
 
-        if (request.getTitle() != null) {
-            todo.updateTitle(request.getTitle());
-        }
+        todo.updateTitle(request.getTitle());
+        todo.updateDescription(request.getDescription());
+        todo.updatePriority(request.getPriority());
+        todo.updateDueDate(request.getDueDate());
 
-        if (request.getDescription() != null) {
-            todo.updateDescription(request.getDescription());
-        }
-
-        if (request.getPriority() != null) {
-            todo.updatePriority(request.getPriority());
-        }
-
-        if (request.getDueDate() != null) {
-            todo.updateDueDate(request.getDueDate());
-        }
-
-        if (request.getCompleted() != null) {
-            if (request.getCompleted()) {
-                todo.complete();
-            } else {
-                todo.incomplete();
-            }
+        if (request.getCompleted()) {
+            todo.complete();
+        } else {
+            todo.incomplete();
         }
 
         return TodoInfoRes.from(todo);

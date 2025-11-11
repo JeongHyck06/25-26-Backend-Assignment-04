@@ -38,14 +38,9 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (request.getUsername() != null) {
-            user.updateUserName(request.getUsername());
-        }
-
-        if (request.getPassword() != null) {
-            String encodedPassword = passwordEncoder.encode(request.getPassword());
-            user.updatePassword(encodedPassword);
-        }
+        user.updateUserName(request.getUsername());
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        user.updatePassword(encodedPassword);
 
         return UserInfoRes.from(user);
     }

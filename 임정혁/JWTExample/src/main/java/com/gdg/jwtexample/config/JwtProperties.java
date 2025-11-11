@@ -1,18 +1,16 @@
 package com.gdg.jwtexample.config;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 @Getter
-@Setter
-@Component
+@RequiredArgsConstructor
 @ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
 
-    private String secret;
-    private Long accessTokenValidityInMilliseconds;
-    private Long refreshTokenValidityInMilliseconds;
+    private final String secret;
+    private final Long accessTokenValidityInMilliseconds;
+    private final Long refreshTokenValidityInMilliseconds;
 }
 

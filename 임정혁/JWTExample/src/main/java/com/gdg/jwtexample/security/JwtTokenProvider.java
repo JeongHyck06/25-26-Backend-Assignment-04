@@ -105,5 +105,9 @@ public class JwtTokenProvider {
     public Long getRefreshTokenValidityInMilliseconds() {
         return jwtProperties.getRefreshTokenValidityInMilliseconds();
     }
+
+    public String getTokenType() {
+        return jwtProperties.getTokenType();
+    }
 }
 

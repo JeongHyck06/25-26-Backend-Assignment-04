@@ -15,11 +15,11 @@ public class TokenRes {
     private String refreshToken;
     private String tokenType;
 
-    public static TokenRes of(String accessToken, String refreshToken) {
+    public static TokenRes of(String accessToken, String refreshToken, String tokenType) {
         return TokenRes.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .tokenType("Bearer")
+                .tokenType(tokenType)
                 .build();
     }
 }

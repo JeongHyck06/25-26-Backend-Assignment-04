@@ -64,7 +64,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createToken(user.getEmail(), user.getRole().toString());
         String refreshToken = createAndSaveRefreshToken(user);
 
-        return TokenRes.of(accessToken, refreshToken);
+        return TokenRes.of(accessToken, refreshToken, jwtTokenProvider.getTokenType());
     }
 
     @Transactional(readOnly = false)
@@ -84,7 +84,7 @@ public class AuthService {
 
         refreshTokenRepository.delete(storedToken);
 
-        return TokenRes.of(newAccessToken, newRefreshToken);
+        return TokenRes.of(newAccessToken, newRefreshToken, jwtTokenProvider.getTokenType());
     }
 
     @Transactional(readOnly = false)

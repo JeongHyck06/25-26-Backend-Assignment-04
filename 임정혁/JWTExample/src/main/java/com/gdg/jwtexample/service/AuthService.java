@@ -62,7 +62,7 @@ public class AuthService {
         }
 
         String accessToken = jwtTokenProvider.createToken(user.getEmail(), user.getRole().toString());
-        String refreshToken = createAndSaveRefreshToken(user.getEmail());
+        String refreshToken = createAndSaveRefreshToken(user);
 
         return TokenRes.of(accessToken, refreshToken);
     }
@@ -77,11 +77,10 @@ public class AuthService {
             throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
 
-        User user = userRepository.findByEmail(storedToken.getUserEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = storedToken.getUser();
 
         String newAccessToken = jwtTokenProvider.createToken(user.getEmail(), user.getRole().toString());
-        String newRefreshToken = createAndSaveRefreshToken(user.getEmail());
+        String newRefreshToken = createAndSaveRefreshToken(user);
 
         refreshTokenRepository.delete(storedToken);
 
@@ -90,11 +89,13 @@ public class AuthService {
 
     @Transactional(readOnly = false)
     public void logout(String userEmail) {
-        refreshTokenRepository.deleteByUserEmail(userEmail);
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        refreshTokenRepository.deleteByUser(user);
     }
 
-    private String createAndSaveRefreshToken(String userEmail) {
-        refreshTokenRepository.findByUserEmail(userEmail)
+    private String createAndSaveRefreshToken(User user) {
+        refreshTokenRepository.findByUser(user)
                 .ifPresent(refreshTokenRepository::delete);
 
         String refreshToken = jwtTokenProvider.createRefreshToken();
@@ -103,7 +104,7 @@ public class AuthService {
 
         RefreshToken token = RefreshToken.builder()
                 .token(refreshToken)
-                .userEmail(userEmail)
+                .user(user)
                 .expiryDate(expiryDate)
                 .build();
 

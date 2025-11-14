@@ -28,8 +28,7 @@ public class TodoService {
 
     @Transactional(readOnly = false)
     public TodoInfoRes createTodo(String email, TodoCreateReq request) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = findUserByEmail(email);
 
         Priority priority = request.priority() != null ? request.priority() : Priority.MEDIUM;
 
@@ -47,41 +46,33 @@ public class TodoService {
     }
 
     public TodoInfoRes getTodoById(String email, Long todoId) {
-        Todo todo = getTodoByIdAndValidateOwner(todoId, email);
+        Todo todo = findTodoWithOwnerValidation(todoId, email);
         return TodoInfoRes.from(todo);
     }
 
     public List<TodoInfoRes> getAllTodos(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
+        User user = findUserByEmail(email);
         return todoRepository.findByUserId(user.getId()).stream()
                 .map(TodoInfoRes::from)
                 .collect(Collectors.toList());
     }
 
     public List<TodoInfoRes> getTodosByCompleted(String email, Boolean completed) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
+        User user = findUserByEmail(email);
         return todoRepository.findByUserIdAndCompleted(user.getId(), completed).stream()
                 .map(TodoInfoRes::from)
                 .collect(Collectors.toList());
     }
 
     public List<TodoInfoRes> getTodosByPriority(String email, Priority priority) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
+        User user = findUserByEmail(email);
         return todoRepository.findByUserIdAndPriority(user.getId(), priority).stream()
                 .map(TodoInfoRes::from)
                 .collect(Collectors.toList());
     }
 
     public List<TodoInfoRes> getOverdueTodos(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
+        User user = findUserByEmail(email);
         return todoRepository.findByUserIdAndDueDateBefore(user.getId(), LocalDate.now()).stream()
                 .map(TodoInfoRes::from)
                 .collect(Collectors.toList());
@@ -89,7 +80,7 @@ public class TodoService {
 
     @Transactional(readOnly = false)
     public TodoInfoRes updateTodo(String email, Long todoId, TodoUpdateReq request) {
-        Todo todo = getTodoByIdAndValidateOwner(todoId, email);
+        Todo todo = findTodoWithOwnerValidation(todoId, email);
 
         todo.updateTitle(request.title());
         todo.updateDescription(request.description());
@@ -107,22 +98,31 @@ public class TodoService {
 
     @Transactional(readOnly = false)
     public void deleteTodo(String email, Long todoId) {
-        Todo todo = getTodoByIdAndValidateOwner(todoId, email);
+        Todo todo = findTodoWithOwnerValidation(todoId, email);
         todoRepository.delete(todo);
     }
 
-    private Todo getTodoByIdAndValidateOwner(Long todoId, String email) {
-        User user = userRepository.findByEmail(email)
+    private Todo findTodoWithOwnerValidation(Long todoId, String email) {
+        User user = findUserByEmail(email);
+        Todo todo = findTodoById(todoId);
+        validateOwner(todo, user);
+        return todo;
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
 
-        Todo todo = todoRepository.findById(todoId)
+    private Todo findTodoById(Long todoId) {
+        return todoRepository.findById(todoId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TODO_NOT_FOUND));
+    }
 
+    private void validateOwner(Todo todo, User user) {
         if (!todo.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorCode.TODO_ACCESS_DENIED);
         }
-
-        return todo;
     }
 }
 

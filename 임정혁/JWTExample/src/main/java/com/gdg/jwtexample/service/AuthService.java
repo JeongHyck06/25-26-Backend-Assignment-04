@@ -30,21 +30,21 @@ public class AuthService {
 
     @Transactional(readOnly = false)
     public Long signUp(UserSignUpReq request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
         }
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String encodedPassword = passwordEncoder.encode(request.password());
 
-        Role role = request.getRole() != null ? request.getRole() : Role.USER;
+        Role role = request.role() != null ? request.role() : Role.USER;
 
         User user = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
+                .username(request.username())
+                .email(request.email())
                 .password(encodedPassword)
                 .role(role)
                 .build();
@@ -54,10 +54,10 @@ public class AuthService {
 
     @Transactional(readOnly = false)
     public TokenRes login(UserLoginReq request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
         }
 

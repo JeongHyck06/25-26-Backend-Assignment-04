@@ -31,14 +31,14 @@ public class TodoService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Priority priority = request.getPriority() != null ? request.getPriority() : Priority.MEDIUM;
+        Priority priority = request.priority() != null ? request.priority() : Priority.MEDIUM;
 
         Todo todo = Todo.builder()
                 .user(user)
-                .title(request.getTitle())
-                .description(request.getDescription())
+                .title(request.title())
+                .description(request.description())
                 .priority(priority)
-                .dueDate(request.getDueDate())
+                .dueDate(request.dueDate())
                 .build();
 
         Todo savedTodo = todoRepository.save(todo);
@@ -91,12 +91,12 @@ public class TodoService {
     public TodoInfoRes updateTodo(String email, Long todoId, TodoUpdateReq request) {
         Todo todo = getTodoByIdAndValidateOwner(todoId, email);
 
-        todo.updateTitle(request.getTitle());
-        todo.updateDescription(request.getDescription());
-        todo.updatePriority(request.getPriority());
-        todo.updateDueDate(request.getDueDate());
+        todo.updateTitle(request.title());
+        todo.updateDescription(request.description());
+        todo.updatePriority(request.priority());
+        todo.updateDueDate(request.dueDate());
 
-        if (request.getCompleted()) {
+        if (request.completed()) {
             todo.complete();
         } else {
             todo.incomplete();
